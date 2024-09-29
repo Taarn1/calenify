@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 export default function UserProfileScreen() {
   return (
     <View style={styles.container}>
-      <Text>Some text here!!!!</Text>
+      <Text>Ikke implementeret</Text>
       <StatusBar style="auto" />
     </View>
   );

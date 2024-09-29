@@ -17,6 +17,6 @@ export default function AppDetailsScreen({ showEarlyEvents, setShowEarlyEvents }
 const styles = StyleSheet.create({
   container: {
     borderWidth: 10,
-    borderColor: 'red',
+    borderColor: 'grey',
   },
 });

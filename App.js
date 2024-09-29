@@ -19,9 +19,6 @@ const firebaseConfig = {
   appId: "1:42782221228:web:5dae10957178e37f7c9009"
 };
 
-
-
-
 const Tab = createBottomTabNavigator();
 
 let db;
