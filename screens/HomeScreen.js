@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Button, FlatList } from 'react-native';
 
-const HomeScreen = ({ events, deleteEvent, showEarlyEvents }) => {
+const HomeScreen = ({navigation, events, deleteEvent, showEarlyEvents }) => {
   // Sorter begivenheder baseret på dato
   const sortedEvents = [...events].sort((a, b) => new Date(a.date) - new Date(b.date));
 
@@ -14,7 +14,7 @@ const HomeScreen = ({ events, deleteEvent, showEarlyEvents }) => {
     <View style={{ flex: 1, padding: 20 }}>
       <Text style={{ fontSize: 24, fontWeight: 'bold' }}>Begivenheder</Text>
 
-      {filteredEvents.length === 0 ? (
+      {filteredEvents.length === 0 ? /*ternary check ifthere are any events */(
         <Text>Ingen begivenheder endnu.</Text>
       ) : (
         <FlatList
@@ -26,6 +26,7 @@ const HomeScreen = ({ events, deleteEvent, showEarlyEvents }) => {
               <Text>{item.date}</Text>
               <Text>{item.description}</Text>
               <Button title="Slet event" onPress={() => deleteEvent(item.id)} />
+              <Button title="Tilføj billede" onPress={() => navigation.navigate('CameraScreen', { eventId: item.id })} />
             </View>
           )}
         />

@@ -9,7 +9,8 @@ export default function AddEventScreen({ navigation}) {
   const [date, setDate] = useState('');
   const [description, setDescription] = useState('');
   const [showDatePicker, setShowDatePicker] = useState(false);
-
+  
+  // Function to handle form submission
     const handleSubmit = () => {  
     if (title.length === 0 || date.length === 0 || description.length === 0) {
       return Alert.alert('Udfyld alle felter!');
@@ -32,14 +33,14 @@ export default function AddEventScreen({ navigation}) {
       Alert.alert('Der opstod en fejl ved gemning af begivenheden.');
     }
   };
-
+  // Function to upload event to Firebase Realtime Database
   const uploadEventToFirebase = async (event) => {
     const db = getDatabase();
     const eventsRef = ref(db, 'events');
     const newEventRef = push(eventsRef);
     await set(newEventRef, event);
   };
-
+  // Function to handle date change
   const handleDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setShowDatePicker(Platform.OS === 'ios');

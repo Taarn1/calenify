@@ -9,14 +9,14 @@ const navController = (navigation, route) =>{
 export default function DetailScreen({navigation}) {
   return (
     <View style={styles.container}>
-                   <ButtonComponent onPress ={()=>navController(navigation,'User Profile')} title="User Profile"/>
-                   <ButtonComponent onPress ={()=>navController(navigation,'App Details')} title="App Details"/>
-
+        <ButtonComponent onPress ={()=>navController(navigation,'User Profile')} title="User Profile"/>
+        <ButtonComponent onPress ={()=>navController(navigation,'App Details')} title="App Details"/>
       <StatusBar style="auto" />
     </View>
   );
 }
 
+//move to styles folder todo
 const styles = StyleSheet.create({
   container: {
     flex: 1,

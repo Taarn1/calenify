@@ -1,14 +1,16 @@
+// App.js
 import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { initializeApp, getApps } from 'firebase/app';
-import { getDatabase, ref, set, push, onValue, remove } from 'firebase/database';
+import { getDatabase, ref, onValue, remove } from 'firebase/database';
 
-import HomeScreen from './screens/HomeScreen';
 import AddEventScreen from './screens/AddEventScreen';
-import StackComponent from './components/StackComponent';
+import HomeStack from './components/HomeStackComponent'; //homescreen, camera, image
+import StackComponent from './components/StackComponent'; //Detailscreen
 
-// Your web app's Firebase configuration
+const Tab = createBottomTabNavigator();
+
 const firebaseConfig = {
   apiKey: "AIzaSyBAJHyzdVPzKEjF7yHzHWZBK0sgnh2PySA",
   authDomain: "calenify-3bb1e.firebaseapp.com",
@@ -19,35 +21,52 @@ const firebaseConfig = {
   appId: "1:42782221228:web:5dae10957178e37f7c9009"
 };
 
-const Tab = createBottomTabNavigator();
-
+// Initialize Firebase
 let db;
 if (getApps().length < 1) {
-const app = initializeApp(firebaseConfig);
-db = getDatabase(app);
-console.log("Firebase On!");
+  const app = initializeApp(firebaseConfig);
+  db = getDatabase(app);
 } else {
-db = getDatabase();
-console.log("Firebase already running!");
+  db = getDatabase();
 }
 
 export default function App() {
-
   const [events, setEvents] = useState([]);
-  const [showEarlyEvents, setShowEarlyEvents] = useState(false);
+  const [showEarlyEvents, setShowEarlyEvents] = useState(false); // Flag to show/hide early events
 
+  // Fetch events from Firebase Realtime Database
   useEffect(() => {
+    // Reference to the 'events' node in the Firebase Realtime Database
     const eventsRef = ref(db, 'events');
-    onValue(eventsRef, (snapshot) => {
-      const data = snapshot.val();
-      const eventsList = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
-      setEvents(eventsList);
-    });
+  
+    // Set up a listener for changes to the 'events' node
+    const unsubscribe = onValue(
+      eventsRef,
+      (snapshot) => {
+        // Get the data from the snapshot
+        const data = snapshot.val();
+  
+        // Convert the data into an array of event objects
+        const eventsList = data ? Object.keys(data).map((key) => ({ id: key, ...data[key] })) : []; 
+  
+        // Update the state with the new list of events
+        setEvents(eventsList);
+      },
+      (error) => {
+        console.error("Error fetching events:", error);
+      }
+    );
+  
+    // Cleanup the listener when the component unmounts
+    return () => unsubscribe();
   }, []);
 
+  // Function to delete an event by ID
   const deleteEvent = (eventId) => {
     const eventRef = ref(db, `events/${eventId}`);
-    remove(eventRef);
+    remove(eventRef)
+      .then(() => console.log(`Event ${eventId} deleted`))
+      .catch((error) => console.error("Error deleting event:", error));
   };
 
   return (
@@ -55,26 +74,11 @@ export default function App() {
       <Tab.Navigator>
         <Tab.Screen name="Hjem">
           {(props) => (
-            <HomeScreen
-              {...props}
-              events={events}
-              deleteEvent={deleteEvent}
-              showEarlyEvents={showEarlyEvents}
-            />
+            <HomeStack {...props} events={events} deleteEvent={deleteEvent} showEarlyEvents={showEarlyEvents} />
           )}
         </Tab.Screen>
-        <Tab.Screen name="Nyt event">
-          {(props) => <AddEventScreen {...props}/>}
-        </Tab.Screen>
-        <Tab.Screen name="Detaljer">
-          {(props) => (
-            <StackComponent
-              {...props}
-              showEarlyEvents={showEarlyEvents}
-              setShowEarlyEvents={setShowEarlyEvents}
-            />
-          )}
-        </Tab.Screen>
+        <Tab.Screen name="Nyt event" component={AddEventScreen} />
+        <Tab.Screen name="Detaljer" component={StackComponent} />
       </Tab.Navigator>
     </NavigationContainer>
   );
